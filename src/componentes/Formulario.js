@@ -6,7 +6,19 @@ function Formulario(props) {
     const clickaAñadir = () => {
 
         let inputNombre = document.getElementById('nombre')
-        console.log(inputNombre.innerHTML);
+
+        if (inputNombre.value == "") {
+
+            alert("RELLENE EL CAMPO POR FAVOR")
+        } else {
+
+            document.getElementById('añadir').disabled = true;
+
+            props.accion(inputNombre.value)
+
+        }
+
+
     }
 
     return (
@@ -17,7 +29,7 @@ function Formulario(props) {
                     <label htmlFor="nombre">Introduzca nombre del Supermercado:</label> <br />
                     <input type="text" id='nombre' name='nombre' />
                 </p>
-                <Button onClick={clickaAñadir}>Añadir supermercado</Button>
+                <Button id="añadir" onClick={clickaAñadir}>Añadir supermercado</Button>
             </form>
         </React.Fragment>
     )
