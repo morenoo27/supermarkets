@@ -27,6 +27,8 @@ class App extends Component {
 
       supers: [],
 
+      newSuper: { nombre: null, x: null, y: null },
+
       seVeForm: false
     }
   }
@@ -50,6 +52,11 @@ class App extends Component {
     }
   }
 
+  nuevoSuper(nombre) {
+
+    console.log("creacion nuevo supermercado");
+  }
+
   render() {
 
     let seVe = this.state.seVeForm ? 'block' : 'none'
@@ -67,7 +74,7 @@ class App extends Component {
             <Botonera mapa={this.state.poblacion} color={this.state.colores} accion={(x, y) => this.click(x, y)} />
 
             <div id='formulario' style={{ display: seVe }}>
-              <Formulario />
+              <Formulario accion={(nombre) => this.nuevoSuper(nombre)} />
             </div>
           </div>
 
