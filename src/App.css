@@ -53,6 +53,12 @@ div#botneraForm {
   flex-flow: column wrap;
 }
 
+table {
+  padding: auto;
+  width: 30%;
+  margin-left: 22%;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
