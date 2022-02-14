@@ -25,7 +25,7 @@ class App extends Component {
 
       colores: Array(9).fill(null).map(pos => Array(9).fill("-")),
 
-      supers: Array(),
+      supers: [],
 
       newSuper: { nombre: null, x: null, y: null },
 
@@ -59,24 +59,22 @@ class App extends Component {
 
   nuevoSuper(nombre) {
 
-    console.log("creacion nuevo supermercado");
-
     let copiaNewSuper = this.state.newSuper
     let copiaSupers = this.state.supers
 
-    console.log(copiaSupers);
+    if (copiaNewSuper.x !== null && copiaNewSuper.y !== null) {
 
+      copiaNewSuper.nombre = nombre
 
-    copiaNewSuper.nombre = nombre
+      copiaSupers.push({
+        nombre: copiaNewSuper.nombre,
+        x: copiaNewSuper.x,
+        y: copiaNewSuper.y
+      });
 
-    if (copiaNewSuper.x != null && copiaNewSuper.y != null && copiaNewSuper.nombre != null) {
-
-      copiaSupers.push(copiaNewSuper);
-
-      this.setState({ super: copiaSupers })
+      this.setState({ supers: copiaSupers })
 
       this.newSuperNull()
-      console.log(copiaNewSuper);
     } else {
 
       alert("Error en el registro del supermercado")
@@ -87,6 +85,20 @@ class App extends Component {
     this.setState({
       seVeForm: false
     })
+  }
+
+  /**
+   * Metodo para depuracion que muestra el estado del objeto newSuper y el array de supermercados
+   */
+  mostrarEstado() {
+
+    let copiaNewSuper = this.state.newSuper
+    let copiaSupers = this.state.supers
+
+    console.log("Supermercado:");
+    console.log(copiaNewSuper);
+    console.log("supermercados:");
+    console.log(copiaSupers);
   }
 
   /**
@@ -109,13 +121,14 @@ class App extends Component {
 
     return (
 
-      <React.Fragment>
+      < React.Fragment >
         <div id='contenedorApp'>
           <div id='botneraForm'>
             <h1>SUPERMARKETS</h1>
             <Botonera mapa={this.state.poblacion} color={this.state.colores} accion={(x, y) => this.click(x, y)} />
 
             <div id='formulario' style={{ display: seVe }}>
+              <h1>FORMULARIO</h1>
               <Formulario accion={(nombre) => this.nuevoSuper(nombre)} />
             </div>
           </div>
@@ -126,7 +139,7 @@ class App extends Component {
           </div>
 
         </div>
-      </React.Fragment>
+      </React.Fragment >
     )
   }
 }
