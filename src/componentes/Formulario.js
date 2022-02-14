@@ -7,7 +7,7 @@ function Formulario(props) {
 
         let inputNombre = document.getElementById('nombre')
 
-        if (inputNombre.value == "") {
+        if (inputNombre.value === "") {
 
             alert("RELLENE EL CAMPO POR FAVOR")
         } else {
@@ -20,7 +20,6 @@ function Formulario(props) {
 
     return (
         <React.Fragment>
-            <h1>FORMULARIO</h1>
             <form>
                 <p>
                     <label htmlFor="nombre">Introduzca nombre del Supermercado:</label> <br />
