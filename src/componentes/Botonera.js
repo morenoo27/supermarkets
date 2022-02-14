@@ -19,7 +19,7 @@ function Botonera(props) {
                 valor = props.mapa[i][j]
             }
 
-            if (props.color[i][j] != "-") {
+            if (props.color[i][j] !== "-") {
 
                 linea.push(<td key={"id" + i + j}><Button color={props.color[i][j]} > {valor} </Button></td>)
             } else {
