@@ -12,13 +12,10 @@ function Formulario(props) {
             alert("RELLENE EL CAMPO POR FAVOR")
         } else {
 
-            document.getElementById('añadir').disabled = true;
-
             props.accion(inputNombre.value)
 
+            inputNombre.value = ''
         }
-
-
     }
 
     return (

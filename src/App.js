@@ -25,7 +25,7 @@ class App extends Component {
 
       colores: Array(9).fill(null).map(pos => Array(9).fill("-")),
 
-      supers: [],
+      supers: Array(),
 
       newSuper: { nombre: null, x: null, y: null },
 
@@ -38,11 +38,16 @@ class App extends Component {
     if (!this.state.seVeForm) {
 
       let copiaColores = this.state.colores
+      let copiaNewSuper = this.state.newSuper
 
       copiaColores[x][y] = "warning"
 
+      copiaNewSuper.x = x
+      copiaNewSuper.y = y
+
       this.setState({
         colores: copiaColores,
+        newSuper: copiaNewSuper,
         seVeForm: true
       })
 
@@ -55,6 +60,47 @@ class App extends Component {
   nuevoSuper(nombre) {
 
     console.log("creacion nuevo supermercado");
+
+    let copiaNewSuper = this.state.newSuper
+    let copiaSupers = this.state.supers
+
+    console.log(copiaSupers);
+
+
+    copiaNewSuper.nombre = nombre
+
+    if (copiaNewSuper.x != null && copiaNewSuper.y != null && copiaNewSuper.nombre != null) {
+
+      copiaSupers.push(copiaNewSuper);
+
+      this.setState({ super: copiaSupers })
+
+      this.newSuperNull()
+      console.log(copiaNewSuper);
+    } else {
+
+      alert("Error en el registro del supermercado")
+
+      this.newSuperNull()
+    }
+
+    this.setState({
+      seVeForm: false
+    })
+  }
+
+  /**
+   * Funcion que instancia a null el estado del nuevo supermercado para dar paso a el registro de uno nuevo
+   */
+  newSuperNull() {
+
+    let copiaNewSuper = this.state.newSuper
+
+    copiaNewSuper.x = null
+    copiaNewSuper.y = null
+    copiaNewSuper.nombre = null
+
+    this.setState({ newSuper: copiaNewSuper })
   }
 
   render() {
@@ -64,13 +110,9 @@ class App extends Component {
     return (
 
       <React.Fragment>
-
-        <header id='cabeceraApp'>
-          <h1>SUPERMARKETS</h1>
-          <h1>LISTA SUPERMERCADO</h1>
-        </header>
         <div id='contenedorApp'>
           <div id='botneraForm'>
+            <h1>SUPERMARKETS</h1>
             <Botonera mapa={this.state.poblacion} color={this.state.colores} accion={(x, y) => this.click(x, y)} />
 
             <div id='formulario' style={{ display: seVe }}>
@@ -79,7 +121,8 @@ class App extends Component {
           </div>
 
           <div id='lista'>
-            <Supermercados />
+            <h1>LISTA SUPERMERCADO</h1>
+            <Supermercados supermercados={this.state.supers} poblacion={this.state.poblacion} />
           </div>
 
         </div>

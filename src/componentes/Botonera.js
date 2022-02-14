@@ -3,8 +3,7 @@ import { Button } from 'reactstrap';
 //COMPONENTE QUE RENDERIZA EL TABLERO DEL JUEGO
 function Botonera(props) {
 
-    let matriz = []
-
+    let tabla = []
 
     for (let i = 0; i < props.mapa.length; i++) {
 
@@ -29,10 +28,10 @@ function Botonera(props) {
         }
 
         let fila = <tr key={"linea" + i}>{linea}</tr>;
-        matriz.push(fila)
+        tabla.push(fila)
     }
 
-    return (<table key={0}><tbody key={1}>{matriz}</tbody></table>)
+    return (<table key={0}><tbody key={1}>{tabla}</tbody></table>)
 }
 
 export default Botonera;

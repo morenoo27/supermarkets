@@ -28,6 +28,7 @@
   color: #61dafb;
 }
 
+
 div#contenedorApp {
 
   display: flex;
@@ -35,29 +36,20 @@ div#contenedorApp {
   justify-content: space-evenly;
 }
 
-header#cabeceraApp {
-
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-evenly;
-}
 
 div#contenedorApp>* {
 
-  flex-basis: 45%;
+  flex-basis: 40%;
 }
 
 div#botneraForm {
 
   display: flex;
   flex-flow: column wrap;
+  text-align: center;
 }
 
-table {
-  padding: auto;
-  width: 30%;
-  margin-left: 22%;
-}
+
 
 @keyframes App-logo-spin {
   from {
