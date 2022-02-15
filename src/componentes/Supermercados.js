@@ -7,7 +7,7 @@ function Supermercados(props) {
 
 /**
  * Metodo que genera una lista de elementos JSX con etiquetas li
- * @param {Array.<Object>} supermercados array con los supermercados en tipo Object { nombre: "ej", x: "ej", y: "ej" }
+ * @param {Array.<{nombre: string, x: Number, y:Number, clientes: Number}>} supermercados array con los supermercados
  * @param {Array.<Array.<Number>>} poblacion matriz con la poblacion totoal del mapa
  * @returns array con todas las li de la lista de supermercados
  */
@@ -15,175 +15,97 @@ function makeLiSupers(supermercados, poblacion) {
 
     let lista = []
 
-    if (supermercados != null) {
+    if (supermercados.length !== 0) {
 
-        let arrayClientes = getClientes(poblacion, supermercados)
+        //ANTES DE NADA, CLIENTES TODOS A 0
+        for (const supermercado of supermercados) {
 
-        for (let i = 0; i < supermercados.length; i++) {
+            supermercado.clientes = 0
+        }
 
-            let supermercado = supermercados[i]
+        //COMPLETAMOS ARRAY CON LOS CLIENTES DE CADA SUPER
+        supermercados = asignarClientes(supermercados, poblacion)
 
-            let nombre = supermercado.nombre
-            let x = supermercado.x
-            let y = supermercado.y
-            let clientesTotales = arrayClientes[i]
 
-            lista.push(<ul key={i}><li>{nombre}</li><ul><li>Coordenadas: ({x}, {y})</li><li>Clientes totales: {clientesTotales}</li></ul></ul>)
+        let key = 0//key para los elementos
+        for (const supermercado of supermercados) {
+
+            //AÑADIMOS SUPERMERCADO A LA LISTA
+            lista.push(<ul key={key}><li>{supermercado.nombre}</li><ul><li>Coordenadas: ({supermercado.x}, {supermercado.y})</li><li>Clientes totales: {supermercado.clientes}</li></ul></ul>)
+            key++
         }
     }
 
+    //devolvemos lista
     return lista
 }
 
 /**
- * metodo que genera un array que asocia la cantidad de clientes que asistiran a cada supermercado.
- * La forma en la que se devuelve el array sera asociativa, es decir, la posicion 1 del 
- * listado de clientes, equivale a los clientes que asistiran al supermercado en la posicion
- * 1 del array de supermercados
+ * Metodo que asigna la cantida de clientes que asistira a cada supermercado y devuelve el array
+ * con los supermercados con sus clientes ya asignados
+ * @param {Array.<{nombre: string, x: Number, y:Number, clientes: Number}>} supermercados array con los supermercados
  * @param {Array.<Array.<Number>>} poblacion matriz con la poblacion totoal del mapa
- * @param {Array.<Object>} supermercados Array con los objetos supermercados
- * @returns Array con los clientes para cada supermercado
+ * @returns Array definitivo para la lista
  */
-function getClientes(poblacion, supermercados) {
+function asignarClientes(supermercados, poblacion) {
 
-    //creamos array asociativo con los clientes de cada super
-    let listadoClientes = Array(supermercados.length)
-
-    //caso de un solo supermercado
-    if (supermercados.length == 1) {
-
-        let clientesSuper = 0
-
-        for (const fila of poblacion) {
-            for (const habitantes of fila) {
-                clientesSuper += habitantes
-            }
-        }
-
-        listadoClientes[0] = clientesSuper
-    } else {
-
-        //a cada posicion, le asignamos la cantidad de clientes
-        listadoClientes = asignarClientes(listadoClientes, poblacion, supermercados)
-
-    }
-
-    return listadoClientes
-}
-
-function asignarClientes(listadoClientes, poblacion, supermercados) {
-
-    //vamos recorriendo toda la matriz
+    //recorremos toda la poblacion
     for (let i = 0; i < poblacion.length; i++) {
         for (let j = 0; j < poblacion[i].length; j++) {
 
-            //nos centramos cada vez en una posicion
+            //miramos que posiciones del array tiene la distancia mas corta de esta posicion del mapa
+            let indiceSupermercados = whatSuper(i, j, supermercados)
 
-            //miramos cual es el super mas cercano
-            let supermercado = superCercano(i, j, poblacion, supermercados)
+            //repartimos la poblacion entre los supermercados que tenemos
+            let pobARep = poblacion[i][j] / indiceSupermercados.length
 
-            //filtrado de respuesta
-            if (Array.isArray(supermercado)) {
+            //asignamos a cada super sus clientes
+            for (const indice of indiceSupermercados) {
 
-                //reparto de clientes
-                let clientesARepartir = poblacion[i][j] / supermercado.length
-
-                //asignacion de clientes
-                for (const posicion of supermercado) {
-
-                    listadoClientes[posicion] += clientesARepartir
-                }
-
-            } else {
-                //asignamos todos los clientes
-                listadoClientes[supermercado] += poblacion[i][j]
+                //sumamos los clientes
+                supermercados[indice].clientes += pobARep
             }
         }
     }
 
-    return listadoClientes
+    //devolvemos array final
+    return supermercados
 }
 
 /**
- * Metodo que obtiene todas las distancias desde x punto hasta todos los supermercados,
- * y selecciona la o las longitudes mas cercana/s al punto de referencia
- * @param {Number} x coordenada x del punto de referencia
- * @param {Number} y coordenada y del punto de referencia
- * @param {Array.<Array.<Number>>} poblacion matriz con la poblacion totoal del mapa
- * @param {Array.<Object>} supermercados Array con los objetos supermercados
- * @returns posicion | posiciones del supermercado mas cercano en el array supermercados
+ * Metodo que identifica cual o cuales son los supermercados que estas mas cercanos al punto de referencia
+ * @param {Number} i coordenada x de la matriz
+ * @param {Number} j coordenada y de la matriz
+ * @param {Array.<{nombre: string, x: Number, y:Number, clientes: Number}>} supermercados array con los supermercados
+ * @returns array con los indices correspondientes del array supermercados
  */
-function superCercano(x, y, poblacion, supermercados) {
+function whatSuper(i, j, supermercados) {
 
-    //ALMACENAMOS DISTANCIAS
-    let distancias = []
+    //obtenemos todas las distancias de ese punto hacia todos los supermercados
+    let distancias = supermercados.map(supermer => Math.abs(supermer.x - i) + Math.abs(supermer.y - j))
 
-    for (let i = 0; i < poblacion.length; i++) {
-        for (let j = 0; j < poblacion[i].length; j++) {
+    let indices = []
 
-            if (isSuper(i, j, supermercados)) {
-                console.log("coordenada super\nMiramos indice");
+    let minima = 99
 
-                let longX = Math.abs(x - i)
-                let longY = Math.abs(j - y)
+    //obtenemos el valor /valores mas peqeño/s
+    for (let i = 0; i < distancias.length; i++) {
 
-                let cat1 = longX * longX
-                let cat2 = longY * longY
+        if (minima == distancias[i]) {
+            indices.push(i)
+        } else if (minima > distancias[i]) {
 
-                let distancia = Math.sqrt(cat1 + cat2)
+            indices = []
 
-                let indice = getIndiceSuper(i, j, supermercados)
+            minima = distancias[i]
 
-
-                distancias.push({ long: distancia, supermercado: indice })
-            }
+            //almacenamos el indice(que sera la pos del array supermercados)
+            indices.push(i)
         }
     }
 
-    let longitudes = distancias.map(e => e.long)
-
-    //OBTENEMOS LA LONGITUD MAS CORTA Y DEVOLVEMOS LA POSICION DEL SUPERMERCADO EN LA LISTA
-    let respuesta = distancias.filter(dist => dist.long === Math.min(longitudes))
-
-    if (respuesta.length === 1) {
-        return respuesta[0].supermercado
-    } else {
-
-        return respuesta.map(pos => pos.supermercado)
-    }
-}
-
-/**
- * 
- * @param {*} i 
- * @param {*} j 
- * @param {*} supermercados 
- * @returns 
- */
-function getIndiceSuper(i, j, supermercados) {
-
-    let thisSuper = supermercados.find(supermer => supermer.x === i && supermer.y === j)
-    for (let k = 0; k < supermercados.length; k++) {
-        if (supermercados[k] === thisSuper) {
-            console.log("Super:");
-            console.log(thisSuper);
-            console.log(k);
-            return k;
-        }
-    }
-
-    return null;
-}
-
-/**
- * Metodo que comprueba si una posicion es o no un supermercado
- * @param {Number} x coordenada x del punto de referencia
- * @param {Number} y coordenada y del punto de referencia
- * @param {Array.<Object>} supermercados Array con los objetos supermercados
- * @returns true => es supermercado | false => no lo es
- */
-function isSuper(x, y, supermercados) {
-    return supermercados.find(supermer => supermer.x === x && supermer.y === y) !== undefined ? true : false
+    //devolvemos indices
+    return indices
 }
 
 export default Supermercados;
