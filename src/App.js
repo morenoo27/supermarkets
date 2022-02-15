@@ -27,7 +27,7 @@ class App extends Component {
 
       supers: [],
 
-      newSuper: { nombre: null, x: null, y: null },
+      newSuper: { nombre: null, x: null, y: null, clientes: 0 },
 
       seVeForm: false
     }
@@ -69,7 +69,8 @@ class App extends Component {
       copiaSupers.push({
         nombre: copiaNewSuper.nombre,
         x: copiaNewSuper.x,
-        y: copiaNewSuper.y
+        y: copiaNewSuper.y,
+        clientes: 0
       });
 
       this.setState({ supers: copiaSupers })
