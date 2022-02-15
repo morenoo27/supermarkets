@@ -17,21 +17,19 @@ function makeLiSupers(supermercados, poblacion) {
 
     if (supermercados != null) {
 
-        let i = 0
+        let arrayClientes = getClientes(poblacion, supermercados)
 
-        let arrayClientes = clientes(poblacion, supermercados)
+        for (let i = 0; i < supermercados.length; i++) {
 
-        supermercados.map(supermercado => {
+            let supermercado = supermercados[i]
 
             let nombre = supermercado.nombre
             let x = supermercado.x
             let y = supermercado.y
-            let clientes = arrayClientes[i]
+            let clientesTotales = arrayClientes[i]
 
-            lista.push(<ul key={i}><li>{nombre}</li><ul><li>Coordenadas: ({x}, {y})</li><li>Clientes totales: {clientes}</li></ul></ul>)
-
-            i++
-        })
+            lista.push(<ul key={i}><li>{nombre}</li><ul><li>Coordenadas: ({x}, {y})</li><li>Clientes totales: {clientesTotales}</li></ul></ul>)
+        }
     }
 
     return lista
@@ -46,47 +44,59 @@ function makeLiSupers(supermercados, poblacion) {
  * @param {Array.<Object>} supermercados Array con los objetos supermercados
  * @returns Array con los clientes para cada supermercado
  */
-function clientes(poblacion, supermercados) {
+function getClientes(poblacion, supermercados) {
 
+    //creamos array asociativo con los clientes de cada super
     let listadoClientes = Array(supermercados.length)
 
+    //caso de un solo supermercado
     if (supermercados.length == 1) {
 
-        let clientes = 0
+        let clientesSuper = 0
 
-        for (let i = 0; i < poblacion.length; i++) {
-            for (let j = 0; j < poblacion[i].length; j++) {
-
-                clientes += poblacion[i][j]
+        for (const fila of poblacion) {
+            for (const habitantes of fila) {
+                clientesSuper += habitantes
             }
         }
 
-        listadoClientes[0] = clientes
+        listadoClientes[0] = clientesSuper
     } else {
 
-        //vamos recorriendo toda la matriz
-        for (let i = 0; i < poblacion.length; i++) {
-            for (let j = 0; j < poblacion[i].length; j++) {
+        //a cada posicion, le asignamos la cantidad de clientes
+        listadoClientes = asignarClientes(listadoClientes, poblacion, supermercados)
 
-                //obtenemos posicion/es
-                let supermercado = superCercano(i, j, poblacion, supermercados)
+    }
 
-                //filtrado de accion
-                if (Array.isArray(supermercado)) {
+    return listadoClientes
+}
 
-                    //reparto de clientes
-                    let clientesARepartir = poblacion[i][j] / supermercado.length
+function asignarClientes(listadoClientes, poblacion, supermercados) {
 
-                    //asignacion de clientes
-                    for (let i = 0; i < supermercado.length; i++) {
+    //vamos recorriendo toda la matriz
+    for (let i = 0; i < poblacion.length; i++) {
+        for (let j = 0; j < poblacion[i].length; j++) {
 
-                        listadoClientes[supermercado[i]] += clientesARepartir
-                    }
+            //nos centramos cada vez en una posicion
 
-                } else {
-                    //asignamos todos los clientes
-                    listadoClientes[supermercado] += poblacion[i][j]
+            //miramos cual es el super mas cercano
+            let supermercado = superCercano(i, j, poblacion, supermercados)
+
+            //filtrado de respuesta
+            if (Array.isArray(supermercado)) {
+
+                //reparto de clientes
+                let clientesARepartir = poblacion[i][j] / supermercado.length
+
+                //asignacion de clientes
+                for (const posicion of supermercado) {
+
+                    listadoClientes[posicion] += clientesARepartir
                 }
+
+            } else {
+                //asignamos todos los clientes
+                listadoClientes[supermercado] += poblacion[i][j]
             }
         }
     }
@@ -112,6 +122,8 @@ function superCercano(x, y, poblacion, supermercados) {
         for (let j = 0; j < poblacion[i].length; j++) {
 
             if (isSuper(i, j, supermercados)) {
+                console.log("coordenada super\nMiramos indice");
+
                 let longX = Math.abs(x - i)
                 let longY = Math.abs(j - y)
 
@@ -120,22 +132,18 @@ function superCercano(x, y, poblacion, supermercados) {
 
                 let distancia = Math.sqrt(cat1 + cat2)
 
-                let indice = 0
-                let thisSuper = supermercados.find(supermer => supermer.x === i && supermer.y === j)
-                for (let i = 0; i < supermercados.length; i++) {
-                    if (supermercados[i] === thisSuper) {
-                        indice = i
-                        break;
-                    }
-                }
+                let indice = getIndiceSuper(i, j, supermercados)
+
 
                 distancias.push({ long: distancia, supermercado: indice })
             }
         }
     }
 
+    let longitudes = distancias.map(e => e.long)
+
     //OBTENEMOS LA LONGITUD MAS CORTA Y DEVOLVEMOS LA POSICION DEL SUPERMERCADO EN LA LISTA
-    let respuesta = distancias.filter(dist => dist === Math.min(distancias))
+    let respuesta = distancias.filter(dist => dist.long === Math.min(longitudes))
 
     if (respuesta.length === 1) {
         return respuesta[0].supermercado
@@ -143,6 +151,28 @@ function superCercano(x, y, poblacion, supermercados) {
 
         return respuesta.map(pos => pos.supermercado)
     }
+}
+
+/**
+ * 
+ * @param {*} i 
+ * @param {*} j 
+ * @param {*} supermercados 
+ * @returns 
+ */
+function getIndiceSuper(i, j, supermercados) {
+
+    let thisSuper = supermercados.find(supermer => supermer.x === i && supermer.y === j)
+    for (let k = 0; k < supermercados.length; k++) {
+        if (supermercados[k] === thisSuper) {
+            console.log("Super:");
+            console.log(thisSuper);
+            console.log(k);
+            return k;
+        }
+    }
+
+    return null;
 }
 
 /**
