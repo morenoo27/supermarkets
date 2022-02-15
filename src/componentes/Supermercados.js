@@ -89,18 +89,18 @@ function whatSuper(i, j, supermercados) {
     let minima = 99
 
     //obtenemos el valor /valores mas peqeño/s
-    for (let i = 0; i < distancias.length; i++) {
+    for (let k = 0; k < distancias.length; k++) {
 
-        if (minima == distancias[i]) {
-            indices.push(i)
-        } else if (minima > distancias[i]) {
+        if (minima == distancias[k]) {
+            indices.push(k)
+        } else if (minima > distancias[k]) {
 
             indices = []
 
-            minima = distancias[i]
+            minima = distancias[k]
 
             //almacenamos el indice(que sera la pos del array supermercados)
-            indices.push(i)
+            indices.push(k)
         }
     }
 
